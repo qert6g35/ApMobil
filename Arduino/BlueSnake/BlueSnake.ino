@@ -1,15 +1,15 @@
-#define gatePin 10
+ #define gatePin 10
 #define clockPin 11
 #define dataPin 12
 //                 define rows pins numbers
-#define R1 7
-#define R2 6
-#define R3 5
-#define R4 4
-#define R5 3
-#define R6 2
-#define R7 13
-#define R8 9
+#define R1 2
+#define R2 3
+#define R3 4
+#define R4 5
+#define R5 6
+#define R6 7
+#define R7 9
+#define R8 13
 //                 define columns pins numbers in shift register
 #define C1 1
 #define C2 2
@@ -27,14 +27,14 @@
 
 //                                    helper
 bool   DispMatrix[8][8] = {//       1.[] col   2.[]row
-  {0,0,0,1,1,0,0,0},
-  {0,0,1,1,1,1,0,0},
-  {0,0,1,1,1,1,0,0},
-  {0,0,0,1,1,0,0,0},
-  {0,0,0,1,1,0,0,0},
-  {0,1,0,1,1,0,1,0},
-  {1,0,1,1,1,1,0,1},
-  {1,0,1,1,1,1,0,1}
+  {1,1,1,1,1,1,1,1},
+  {0,0,1,0,0,1,0,0},
+  {0,0,1,0,0,1,1,1},
+  {0,0,1,0,0,1,0,0},
+  {1,1,1,0,1,1,1,1},
+  {1,0,0,0,0,0,1,0},
+  {1,1,1,0,0,0,1,0},
+  {0,0,1,0,0,0,1,0}
   };
 
 byte   CMatrix[8] = {
@@ -48,43 +48,43 @@ byte getColumn(byte row){
   for(int i = 0; i < 8; i++){
     numberForColumnDisplay = numberForColumnDisplay +  DispMatrix[i][row] * CMatrix[i];
   }
-  return numberForColumnDisplay;
+  return 255 - numberForColumnDisplay;
 }
 
 
 void SelectRow(byte row){
-  digitalWrite(R1,HIGH);
-  digitalWrite(R2,HIGH);
-  digitalWrite(R3,HIGH);
-  digitalWrite(R4,HIGH);
-  digitalWrite(R5,HIGH);
-  digitalWrite(R6,HIGH);
-  digitalWrite(R7,HIGH);
-  digitalWrite(R8,HIGH); 
+  digitalWrite(R1,LOW);
+  digitalWrite(R2,LOW);
+  digitalWrite(R3,LOW);
+  digitalWrite(R4,LOW);
+  digitalWrite(R5,LOW);
+  digitalWrite(R6,LOW);
+  digitalWrite(R7,LOW);
+  digitalWrite(R8,LOW);
   switch(row){
   case 0:
-    digitalWrite(R1,LOW);
+    digitalWrite(R1,HIGH);
     break;
   case 1:
-    digitalWrite(R2,LOW);
+    digitalWrite(R2,HIGH);
     break;
   case 2:
-    digitalWrite(R3,LOW);
+    digitalWrite(R3,HIGH);
     break;
   case 3:
-    digitalWrite(R4,LOW);
+    digitalWrite(R4,HIGH);
     break;
   case 4:
-    digitalWrite(R5,LOW);
+    digitalWrite(R5,HIGH);
     break;
   case 5:
-    digitalWrite(R6,LOW);
+    digitalWrite(R6,HIGH);
     break;
   case 6:
-    digitalWrite(R7,LOW);
+    digitalWrite(R7,HIGH);
     break;
   case 7:
-    digitalWrite(R8,LOW);
+    digitalWrite(R8,HIGH);
     break;
   default:
     break;
@@ -143,10 +143,10 @@ class Snake{//                                                     snake class
 
 
 Snake::Snake(){
-  body[0][0] = 4;//                  its for column x                       
-  body[1][0] = 4;//                  its for row y
-  body[0][1] = 4;                       
-  body[1][1] = 5;
+  body[0][0] = 7;//                  its for column x                       
+  body[1][0] = 6;//                  its for row y
+  body[0][1] = 7;                       
+  body[1][1] = 7;
   Candy[0][0] = 2;
   Candy[0][1] = 1;
   Candy[1][0] = 4;
@@ -354,11 +354,10 @@ unsigned long Time;
 //                                                                        SetUp 
 
 void setup() {
-//                       setting pinMode's for 74HC595 ShiftRegister 
+//                       setting pinMode's for cols and rows 74HC595 ShiftRegister 
   pinMode(gatePin,OUTPUT);
   pinMode(clockPin,OUTPUT);
   pinMode(dataPin,OUTPUT);
-//                       setting pinMode's for 74HC595 ShiftRegister 
   pinMode(R1,OUTPUT);
   pinMode(R2,OUTPUT);
   pinMode(R3,OUTPUT);
@@ -376,8 +375,22 @@ void setup() {
 //                       turning off all matrix
 
 //                       set all Columns on LOW
-  SelectColumns(255);
+  
+  SelectColumns(0);
+  digitalWrite(R1,HIGH);
+  digitalWrite(R2,HIGH);
+  digitalWrite(R3,HIGH);
+  digitalWrite(R4,HIGH);
+  digitalWrite(R5,HIGH);
+  digitalWrite(R6,HIGH);
+  digitalWrite(R7,HIGH);
+  digitalWrite(R8,HIGH);
 //                       set all Rows on High
+
+  delay(3000);
+
+
+  SelectColumns(255);
   digitalWrite(R1,LOW);
   digitalWrite(R2,LOW);
   digitalWrite(R3,LOW);
@@ -389,25 +402,22 @@ void setup() {
 
   delay(3000);
 
-//                       set all Columns on LOW
-  SelectColumns(0);
-//                       set all Rows on High
+    SelectColumns(0);
   digitalWrite(R1,HIGH);
   digitalWrite(R2,HIGH);
-  digitalWrite(R3,HIGH);
+  digitalWrite(R3,LOW);
   digitalWrite(R4,HIGH);
   digitalWrite(R5,HIGH);
-  digitalWrite(R6,HIGH);
+  digitalWrite(R6,LOW);
   digitalWrite(R7,HIGH);
   digitalWrite(R8,HIGH);
-
-  Serial.begin(9600);
-  Time = millis();
+//  Serial.begin(9600);
+//  Time = millis();
 }
 
 void Show(){
   for(int i = 0;i<8;i++){
-     SelectColumns(0);
+     SelectColumns(255);
      SelectRow(i);
      SelectColumns(getColumn(i));
   }
@@ -418,11 +428,11 @@ byte pom;
 byte ifCandyCollected;
 
 void loop() {
-  pom = checkButtons();
+  //pom = checkButtons();
       
-  if(pom){
-    lastButton = pom;// system of cheacking button (works)
-  }
+  //if(pom){
+  //  lastButton = pom;// system of cheacking button (works)
+  //}
   if(Time + 1000 < millis()){
     if(snake->moveSnake(snake->whereToGo(lastButton))){
       delete snake;
