@@ -1,9 +1,15 @@
- #define gatePin 10
+#include <SoftwareSerial.h>
+SoftwareSerial HM10(2, 3); // RX = 2, TX = 3
+
+char appData;  
+String inData = "";
+//
+#define gatePin 10
 #define clockPin 11
 #define dataPin 12
 //                 define rows pins numbers
-#define R1 2
-#define R2 3
+#define R1 A0
+#define R2 A1
 #define R3 4
 #define R4 5
 #define R5 6
@@ -413,6 +419,9 @@ void setup() {
   digitalWrite(R8,HIGH);
 //  Serial.begin(9600);
 //  Time = millis();
+  Serial.begin(9600);
+  Serial.println("HM10 serial started at 9600");
+  HM10.begin(9600); 
 }
 
 void Show(){
@@ -433,6 +442,29 @@ void loop() {
   //if(pom){
   //  lastButton = pom;// system of cheacking button (works)
   //}
+
+  while (HM10.available() > 0) {   // if HM10 sends something then read
+    appData = HM10.read();
+    inData = String(appData);  // save the data in string format
+    Serial.write(appData);
+    if(inData == "L"){
+      lastButton = 3;
+    }
+    if(inData == "R"){
+      lastButton = 4;
+    }
+    if(inData == "C"){
+      lastButton = 0;
+    }
+  }
+
+ 
+
+  if (Serial.available()) {           // Read user input if available.
+    delay(10);
+    HM10.write(Serial.read());
+  }
+  
   if(Time + 1000 < millis()){
     if(snake->moveSnake(snake->whereToGo(lastButton))){
       delete snake;
