@@ -1,5 +1,5 @@
 #include <SoftwareSerial.h>
-SoftwareSerial HM10(2, 3); // RX = 2, TX = 3
+SoftwareSerial hc06(3, 2); // RX = 2, TX = 3
 
 char appData;  
 String inData = "";
@@ -421,7 +421,7 @@ void setup() {
 //  Time = millis();
   Serial.begin(9600);
   Serial.println("HM10 serial started at 9600");
-  HM10.begin(9600); 
+  hc06.begin(9600); 
 }
 
 void Show(){
@@ -443,8 +443,8 @@ void loop() {
   //  lastButton = pom;// system of cheacking button (works)
   //}
 
-  while (HM10.available() > 0) {   // if HM10 sends something then read
-    appData = HM10.read();
+  while (hc06.available()) {   // if HM10 sends something then read
+    appData = hc06.read();
     inData = String(appData);  // save the data in string format
     Serial.write(appData);
     if(inData == "L"){
@@ -456,14 +456,9 @@ void loop() {
     if(inData == "C"){
       lastButton = 0;
     }
+    
   }
 
- 
-
-  if (Serial.available()) {           // Read user input if available.
-    delay(10);
-    HM10.write(Serial.read());
-  }
   
   if(Time + 1000 < millis()){
     if(snake->moveSnake(snake->whereToGo(lastButton))){

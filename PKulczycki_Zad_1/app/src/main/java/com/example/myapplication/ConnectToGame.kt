@@ -155,7 +155,8 @@ class ConnectToGame : AppCompatActivity() {
                     Manifest.permission.BLUETOOTH_CONNECT
                 ) == PackageManager.PERMISSION_GRANTED
             ) {
-                intent.putExtra("message", "Connecting to " + device.name)
+                val pom = "Connected to " + device.name.toString()
+                intent.putExtra("CONN_MESS", pom)
             }
         }
         startActivity(intent)

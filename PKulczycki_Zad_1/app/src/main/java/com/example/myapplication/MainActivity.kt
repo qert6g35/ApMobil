@@ -21,6 +21,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var ButtonRight: Button
     private lateinit var ButtonConnect: Button
     private lateinit var AlertText: TextView
+    private lateinit var Connectiontext: TextView
     private var isConnented = false
     private var message = ""
 
@@ -33,34 +34,54 @@ class MainActivity : AppCompatActivity() {
         ButtonLeft = findViewById<Button>(R.id.buttonL)
         ButtonRight  = findViewById<Button>(R.id.buttonR)
         ButtonConnect = findViewById<Button>(R.id.connect)
+        Connectiontext= findViewById(R.id.ConnectionStatusTextView)
         AlertText = findViewById(R.id.infoText)
-        AlertText.text = "Loadin App"
+        AlertText.text = "Go connect to youre game"
+        Connectiontext.text = "Not Connected"
         if(DevToConnect.Device != null){
             Connection = ConnectThread(DevToConnect.Device!!)
-            AlertText.text = intent.getStringExtra("message")
-            AlertText.text = "getting conection"
+            AlertText.text = "Lets play a game!"
+            val pomstring = intent.getStringExtra("CONN_MESS")
+            println(pomstring)
+            if (pomstring == null){
+                Connectiontext.text = "Connected !"
+            }else{
+                Connectiontext.text = pomstring
+            }
             Connection!!.run()
+
         }
 
         ButtonForward.setOnClickListener {
-            message = "↑";
-            AlertText.text = message
-
+            //AlertText.text = message
+            Connection?.write(67)
         }
 
         ButtonLeft.setOnClickListener {
-            message = "←";
-            AlertText.text =  message
+            //AlertText.text =  message
+            Connection?.write(76)
         }
 
         ButtonRight.setOnClickListener {
-            message = "→";
-            AlertText.text  = message
+            //AlertText.text  = message
+            Connection?.write(82)
         }
         ButtonConnect.setOnClickListener {
            intent = Intent(this, ConnectToGame::class.java)
+            if(DevToConnect.Device != null){
+                Connection!!.cancel()
+
+            }
             startActivity(intent)
         }
+
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Connection?.cancel()
+        DevToConnect.Device = null
+        println("DESTRUKTOR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
     }
 
